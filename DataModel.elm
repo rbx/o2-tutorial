@@ -37,6 +37,7 @@ type BuildUp = Reuse
              | Replace String
              | Append String
              | ReplaceLast String
+             | ReplaceLastN Int String
 
 foldBuildup : BuildUp -> List String -> List String 
 {-- Given a list of buildups, it calculates the string corresponding to folding
@@ -49,6 +50,7 @@ foldBuildup next acc =
     Replace a       -> [a]
     Append a        -> acc ++ [a]
     ReplaceLast a  -> (List.take ((List.length acc) - 1) acc) ++ [a]
+    ReplaceLastN n a  -> (List.take ((List.length acc) - n) acc) ++ [a]
 
 maxSlideBuildUp : Int -> Array Layout -> Int
 maxSlideBuildUp i slides =

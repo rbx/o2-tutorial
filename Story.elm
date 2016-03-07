@@ -169,7 +169,7 @@ deviceStep : Layout
 deviceStep = ImageStep
   {
     header = HeaderPane { content = [Single """
-## Your first device
+## O2 / FairRoot architecture : Devices
 
 Let's now try to create a new O2 process which does some sort of
 data-processing. O2 describes processing workflows in terms of so called
@@ -184,7 +184,7 @@ topologyStep = ImageStep
   {
     header = HeaderPane { content = [Single """
 
-## Your first device
+## O2 / FairRoot architecture : Topologies
 
 A group of devices can be linked together in what is called a ``topology''.
 """]},
@@ -196,9 +196,9 @@ samplerSinkStep = ImageStep
   {
     header = HeaderPane {content = [Single """
 
-## Your first device
+## Your first topology
 
-To start with, we will construct a simple topology comprising of two elements:
+To start with, we will construct a simple topology comprising of two devices:
 - a "Sampler" which produces "hello world" objects
 - a "Sink" which consumes them
 
@@ -230,17 +230,17 @@ samplerHeaderStep = TwoPanesStep
   {
     header = HeaderPane {content = [Single """
 
-## Creating the package
+## The Sampler
 
 We then create the Sampler. At minimum you will need to implement the
-Run() method, which is the one which is used to implement the event loop of
-the device state machine.
+`Run()` method, which is used to implement the message handling loop of
+the device.
 
 """]},
     leftPane = ShellPane {content = [Single """
 $ cd O2
 $ mkdir -p examples/tutorial-1
-$ vim examples/tutorial-1/sampler.h
+$ vim examples/tutorial-1/AliceO2TutorialSampler.h
 """]},
     rightPane = EditorPane { content = [Single """
 #ifndef ALICEO2TUTORIALSAMPLER_H_
@@ -250,15 +250,13 @@ $ vim examples/tutorial-1/sampler.h
 
 class AliceO2TutorialSampler : public FairMQDevice
 {
-  public:
-    AliceO2TutorialSampler();
   protected:
     virtual void Run();
 };
 
-#endif /* ALICEO2TUTORIALSAMPLER_H_ */]
+#endif /* ALICEO2TUTORIALSAMPLER_H_ */
 """],
-    filename = "examples/tutorial-1/sampler.h"
+    filename = "examples/tutorial-1/AliceO2TutorialSampler.h"
     }
   }
 
@@ -267,36 +265,69 @@ samplerImplStep = TwoPanesStep
   {
     header = HeaderPane {content = [Single """
 
-## Creating the package
+## The Sampler
 
-In the run method you will actually make sure you will keep iterating
+We now pass to the implementation of the `Run()` method.
+""", Append """
+First the `Run()` method we will actually make sure you will keep iterating
 until the state machine does not exit from the `RUNNING` state.
+""", ReplaceLast """
+Inside this loop we construct a simple "Hello world" message which will
+then published for subscribers to receive.
+""", ReplaceLastN 3 """
 
-In this example we constuct a simple "Hello world" message which we then
-publish for subscribers to receive.
+## The Sampler
 
-Notice the use of the `LOG(INFO)` facility to print out log messages for your
-device.
-
+The full code for our Sampler device is the following. Copy and paste
+it in the correct place. Notice the use of the `LOG(INFO)` facility to
+handle debug / informative messages and the fact that we artificially
+limit the rate to one per second.
+""", Append """
+Once we have implemented the sampler class we need to actually create an 
+executable which instanciates our device.
 """]},
     leftPane = ShellPane {
       content = [
         Single "
-$ vim examples/tutorial-1/sampler.h
+$ vim examples/tutorial-1/AliceO2TutorialSampler.cxx
 "
         ]
    },
     rightPane = EditorPane {
-      filename = "examples/tutorial-1/sampler.cxx",
-      content = [Single """
+      filename = "examples/tutorial-1/AliceO2TutorialSampler.cxx",
+      content = [Single "", Single """ 
+...
+
+void AliceO2TutorialSampler::Run()
+{
+  while (CheckCurrentState(RUNNING))
+  {
+    ...
+  }
+}
+
+...
+""", Single """
+...
+
+std::string text = "Hello world";
+
+std::unique_ptr<FairMQMessage> msg(
+  fTransportFactory->CreateMessage(const_cast<char*>(text.c_str()),
+                                   text.length()));
+
+fChannels.at("data-out").at(0).Send(msg);
+
+...
+""", Single """
 #include <memory>
 
 #include <boost/thread.hpp>
 
-#include "Sampler.h"
+#include "AliceO2TutorialSampler.h"
 #include "FairMQLogger.h"
 
-void FairMQExample1Sampler::Run()
+void AliceO2TutorialSampler::Run()
 {
   while (CheckCurrentState(RUNNING))
   {
@@ -306,9 +337,9 @@ void FairMQExample1Sampler::Run()
 
     std::unique_ptr<FairMQMessage> msg(
       fTransportFactory->CreateMessage(const_cast<char*>(text.c_str()),
-                                       text.length(), 0, text));
+                                       text.length()));
 
-    LOG(INFO) << "Sending \"" << text << "\"";
+    LOG(INFO) << "Sending \\"" << text << "\\"";
 
     fChannels.at("data-out").at(0).Send(msg);
   }
@@ -322,81 +353,164 @@ sinkHeaderStep = TwoPanesStep
   {
     header = HeaderPane { content = [Single """
 
-## Creating the package
+## The Sink
 
-Similarly for the Sink, we must derive from `FairMQDevice` and implement the
+Also for the Sink, we must derive from `FairMQDevice` and implement the
 `Run()` method.
 
 In this case the implementation will simply receive the messages and
-print them out.
+print them out. This is done by invoking the `Receive()` method of the
+channel.
+
+""", Append """ The rest of the code is similar to the Sampler one, with 
+the inner loop for the `RUNNING` state.
 
 """]},
     leftPane = EditorPane {
-      filename = "examples/tutorial-1/sink.h",
+      filename = "examples/tutorial-1/AliceO2TutorialSink.h",
       content = [
         Single """
-#ifndef FAIRMQEXAMPLE1SINK_H_
-#define FAIRMQEXAMPLE1SINK_H_
+#ifndef ALICEO2TUTORIALSINK_H_
+#define ALICEO2TUTORIALSINK_H_
 
 #include "FairMQDevice.h"
 
-class FairMQExample1Sink : public FairMQDevice
+class AliceO2TutorialSink : public FairMQDevice
 {
-  public:
-    FairMQExample1Sink();
-    virtual ~FairMQExample1Sink();
-
   protected:
     virtual void Run();
 };
 
-#endif /* FAIRMQEXAMPLE1SINK_H_ */
+#endif /* ALICEO2TUTORIALSINK_H_ */
 """]},
     rightPane = EditorPane {
-      filename = "examples/tutorial-1/sink.cxx",
+      filename = "examples/tutorial-1/AliceO2TutorialSink.cxx",
       content = [Single """
-#include <memory>
+...
+unique_ptr<FairMQMessage> msg(fTransportFactory->CreateMessage());
 
-#include <boost/thread.hpp>
-
-#include "Sampler.h"
+if (fChannels.at("data-in").at(0).Receive(msg) >= 0)
+{
+    LOG(INFO) << "Received message: \\""
+              << string(static_cast<char*>(msg->GetData()), msg->GetSize())
+              << "\\"";
+}
+...
+""", Single """
+#include "AliceO2TutorialSink.h"
 #include "FairMQLogger.h"
 
-void FairMQExample1Sampler::Run()
+using namespace std;
+
+void AliceO2TutorialSink::Run()
 {
-  while (CheckCurrentState(RUNNING))
-  {
-    boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+    while (CheckCurrentState(RUNNING))
+    {
+        unique_ptr<FairMQMessage> msg(fTransportFactory->CreateMessage());
 
-    std::string text = "Hello world";
-
-    std::unique_ptr<FairMQMessage> msg(
-      fTransportFactory->CreateMessage(const_cast<char*>(text.c_str()),
-                                       text.length(), 0, text));
-
-    LOG(INFO) << "Sending \"" << text << "\"";
-
-    fChannels.at("data-out").at(0).Send(msg);
-  }
+        if (fChannels.at("data-in").at(0).Receive(msg) >= 0)
+        {
+            LOG(INFO) << "Received message: \\""
+                      << string(static_cast<char*>(msg->GetData()), msg->GetSize())
+                      << "\\"";
+        }
+    }
 }
 """]
     }
   }
 
 applicationsStep: Layout
-applicationsStep = TwoPanesStep
+applicationsStep = SinglePaneStep
   {
     header = HeaderPane { content = [Single """
 
 ## Creating the driver processes
 
-Now that we have our own devices, we need to create some boilerplate to be able to pass them
-(optional) arguments and launch them:
+Now that we have two classes for our own `FairMQDevice`s, we need to
+create some boilerplate to be able to pass the (optional) arguments and
+launch start the devices. We will call these two executable `runSampler`
+and `runSink` respectively.
 
+""", Replace """
+## Creating the driver processes
+
+First of all the driver is responsible to instanciate the devices and
+the configuration option parser. We call the `CatchSignals()` method
+of the `FairMQDevice` class to make sure that exceptions are properly
+handled as `std::exceptions.`
+""", ReplaceLast """
+## Creating the driver processes
+
+As part of the initialization the driver needs to:
+- Parse the configuration.
+""", Append """- Create the map of channel from the configuration.
+""", Append """- Set the transport type and any other option found in the
+configuration.
+""", Append """- Initialise and transition the state machine until the
+main loop is reached.
 """]},
-    leftPane = EditorPane {
-      filename = "examples/tutorial-1/runSampler.h",
+    pane = EditorPane {
+      filename = "examples/tutorial-1/runSampler.cxx",
       content = [ Single """
+""", Single """
+...
+int main(int argc, char** argv)
+{
+  AliceO2TutorialSampler sampler;
+  sampler.CatchSignals();
+
+  FairMQProgOptions config;
+
+  try
+  {
+    if (config.ParseAll(argc, argv))
+      return 0;
+    ...
+  }
+  catch (std::exception& e)
+  {
+    LOG(ERROR) << e.what();
+    LOG(INFO) << "Command line options are the following: ";
+    config.PrintHelp();
+    return 1;
+  }
+  return 0;
+}
+""", Single """ 
+...
+
+std::string filename = config.GetValue<std::string>("config-json-file");
+std::string id = config.GetValue<std::string>("id");
+
+config.UserParser<FairMQParser::JSON>(filename, id);
+""", Append """
+sampler.fChannels = config.GetFairMQMap();
+""", Append """
+sampler.SetTransport(config.GetValue<std::string>("transport"));
+sampler.SetProperty(AliceO2TutorialSampler::Id, id);
+""", Append """
+sampler.ChangeState("INIT_DEVICE");
+sampler.WaitForEndOfState("INIT_DEVICE");
+
+sampler.ChangeState("INIT_TASK");
+sampler.WaitForEndOfState("INIT_TASK");
+
+sampler.ChangeState("RUN");
+sampler.InteractiveStateLoop();
+"""]}
+  }
+
+
+finalAppStep = TwoPanesStep {
+  header = HeaderPane {content = [Single """
+  ## Creating the driver processes
+
+  The final sourcecode for the sampler can be found below with the similar one for the sink.
+  """]} ,
+  leftPane = EditorPane {
+    filename = "examples/tutorial-1/runSampler.cxx",
+    content = [Single """
 #include <iostream>
 
 #include "boost/program_options.hpp"
@@ -404,27 +518,19 @@ Now that we have our own devices, we need to create some boilerplate to be able 
 #include "FairMQLogger.h"
 #include "FairMQParser.h"
 #include "FairMQProgOptions.h"
-#include "FairMQExample1Sampler.h"
+#include "AliceO2TutorialSampler.h"
 
 using namespace boost::program_options;
 
 int main(int argc, char** argv)
 {
-    FairMQExample1Sampler sampler;
+    AliceO2TutorialSampler sampler;
     sampler.CatchSignals();
 
     FairMQProgOptions config;
 
     try
     {
-        std::string text;
-
-        options_description samplerOptions("Sampler options");
-        samplerOptions.add_options()
-            ("text", value<std::string>(&text)->default_value("Hello"), "Text to send out");
-
-        config.AddToCmdLineOptions(samplerOptions);
-
         if (config.ParseAll(argc, argv))
         {
             return 0;
@@ -441,8 +547,7 @@ int main(int argc, char** argv)
 
         sampler.SetTransport(config.GetValue<std::string>("transport"));
 
-        sampler.SetProperty(FairMQExample1Sampler::Id, id);
-        sampler.SetProperty(FairMQExample1Sampler::Text, text);
+        sampler.SetProperty(AliceO2TutorialSampler::Id, id);
 
         sampler.ChangeState("INIT_DEVICE");
         sampler.WaitForEndOfState("INIT_DEVICE");
@@ -472,11 +577,11 @@ int main(int argc, char** argv)
 #include "FairMQLogger.h"
 #include "FairMQParser.h"
 #include "FairMQProgOptions.h"
-#include "FairMQExample1Sink.h"
+#include "AliceO2TutorialSink.h"
 
 int main(int argc, char** argv)
 {
-    FairMQExample1Sink sink;
+    AliceO2TutorialSink sink;
     sink.CatchSignals();
 
     FairMQProgOptions config;
@@ -499,7 +604,7 @@ int main(int argc, char** argv)
 
         sink.SetTransport(config.GetValue<std::string>("transport"));
 
-        sink.SetProperty(FairMQExample1Sink::Id, id);
+        sink.SetProperty(AliceO2TutorialSink::Id, id);
 
         sink.ChangeState("INIT_DEVICE");
         sink.WaitForEndOfState("INIT_DEVICE");
@@ -520,6 +625,49 @@ int main(int argc, char** argv)
 
     return 0;
 }
+"""]
+    }
+  }
+
+compiling = TwoPanesStep {
+    header = HeaderPane { content = [Single """## Compiling
+      """]},
+    leftPane = ShellPane { 
+      content = [Single """
+$ vim examples/tutorial-1/CMakeLists.txt
+"""],
+    },
+    rightPane = EditorPane { 
+      filename = "examples/tutorial-1/CMakeLists.txt",
+      content = [Single """
+#configure_file(${CMAKE_SOURCE_DIR}/examples/MQ/1-sampler-sink/ex1-sampler-sink.json ${CMAKE_BINARY_DIR}/bin/config/ex1-sampler-sink.json)
+
+include_directories(
+  ${FAIRROOT_ROOT}/include
+  ${Boost_INCLUDE_DIR}
+  ${FAIRROOT_INCLUDE_DIR} 
+  ${CMAKE_SOURCE_DIR}/examples/tutorial-1
+)
+
+link_directories(
+  ${Boost_LIBRARY_DIRS}
+  ${FAIRROOT_LIBRARY_DIR} 
+)
+
+add_executable(runSink runSink.cxx AliceO2TutorialSink.cxx)
+target_link_libraries(runSink FairMQ 
+                              boost_log
+                              boost_thread
+                              boost_system
+                              boost_program_options
+                              fairmq_logger)
+add_executable(runSampler runSampler.cxx AliceO2TutorialSampler.cxx)
+target_link_libraries(runSampler FairMQ 
+                                 boost_log
+                                 boost_thread
+                                 boost_system
+                                 boost_program_options
+                                 fairmq_logger)
 """]
     }
   }

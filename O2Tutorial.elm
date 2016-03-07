@@ -106,7 +106,9 @@ model =
       samplerHeaderStep,
       samplerImplStep,
       sinkHeaderStep,
-      applicationsStep
+      applicationsStep,
+      finalAppStep,
+      compiling
     ])
   }
 
@@ -198,11 +200,18 @@ stepper model =
     navigationButton = (\n -> li [stepStyle] [a [href ("#" ++ (toString n)), stepKind n model] [text (toString n)]]) 
   in
     ol [stepperStyle] (List.map navigationButton [0 .. numberOfSlides-1])
- 
+
+title : Model -> Html
+title model =
+  div [] [text ("Section: " ++ toString model.currentStep ++ " / Step: " ++ toString model.currentBuildUp)]
+
 view address model =
   div []
     [ 
-      div [topBarStyle] [stepper model],
+      div [class "pure-g", topBarStyle] [
+        div [class "pure-u-1-2"] [title model],
+        div [class "pure-u-1-2"] [stepper model]
+      ],
       div [descriptionStyle] [currentBackground model]
     ]
 
