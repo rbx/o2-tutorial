@@ -703,8 +703,8 @@ install(TARGETS runSampler runSink
 running = TwoPanesStep {
     header = HeaderPane { content = [Single """## Running
 
-""", Append """In order to build you need to move to the
-`sw/BUILD/O2-latest/O2` directory and type make.
+Now that we have two devices, we need run them and make sure they are configured correctly so that they can 
+talk to each other. 
 """]},
     leftPane = ShellPane { 
       content = [Single """
