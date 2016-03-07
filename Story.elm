@@ -47,8 +47,11 @@ build everything and provide you with an easy to setup work environment.
   Once you have downloaded alibuild itself, you need to download the
 recipes which describe your software distribution, these are maintained in a separate project
 called `alidist`.
-""",
-  Replace """
+""", Append """Since in this particular case we want to also develop
+inside O2, we checkout its sources making sure they are at the same
+level as `alidist`. Notice how we pick up the `dev` branch for
+development.
+""", Replace """
 ## Building the software
 
 You can build the software by issuing the `aliBuild build` command.
@@ -66,6 +69,8 @@ $ git clone https://github.com/alisw/alibuild
 """,
                   Append """
 $ git clone https://github.com/alisw/alidist
+""",              Append """
+$ git clone -b dev https://github.com/AliceO2Group O2
 """,
                   Append """
 $ alibuild/aliBuild build O2
@@ -631,17 +636,38 @@ int main(int argc, char** argv)
 
 compiling = TwoPanesStep {
     header = HeaderPane { content = [Single """## Compiling
-      """]},
+
+In order to compile in Alice O2 we rely on [CMake](https://cmake.org). You will need
+to add a `examples/tutorial-1/CMakeLists.txt` which specifies how to compile the to Device
+driver processes.
+""", Append """In order to build you need to move to the
+`sw/BUILD/O2-latest/O2` directory and type make.
+"""]},
     leftPane = ShellPane { 
       content = [Single """
 $ vim examples/tutorial-1/CMakeLists.txt
-"""],
+""",Append """
+$ cd sw/BUILD/O2-latest/O2
+$ make -j 10 install
+...
+[ 73%] Built target aliceHLTEventSampler
+[ 74%] Built target aliceHLTWrapper
+[ 76%] Built target runComponent
+[ 88%] Built target AliceO2Cdb
+[ 90%] Built target conditions-client
+[ 91%] Built target conditions-server
+[ 91%] Built target libAliceO2Cdb.rootmap
+[ 94%] Built target runSampler
+[ 96%] Built target runSink
+[ 97%] Built target libtestits.rootmap
+[100%] Built target testits
+$ 
+""", Replace """
+$ which runSampler && which runSink"""],
     },
     rightPane = EditorPane { 
       filename = "examples/tutorial-1/CMakeLists.txt",
       content = [Single """
-#configure_file(${CMAKE_SOURCE_DIR}/examples/MQ/1-sampler-sink/ex1-sampler-sink.json ${CMAKE_BINARY_DIR}/bin/config/ex1-sampler-sink.json)
-
 include_directories(
   ${FAIRROOT_ROOT}/include
   ${Boost_INCLUDE_DIR}
@@ -668,6 +694,41 @@ target_link_libraries(runSampler FairMQ
                                  boost_system
                                  boost_program_options
                                  fairmq_logger)
+install(TARGETS runSampler runSink
+        RUNTIME DESTINATION bin)
 """]
+    }
+  }
+
+running = TwoPanesStep {
+    header = HeaderPane { content = [Single """## Running
+
+""", Append """In order to build you need to move to the
+`sw/BUILD/O2-latest/O2` directory and type make.
+"""]},
+    leftPane = ShellPane { 
+      content = [Single """
+"""],
+    },
+    rightPane = EditorPane { 
+      filename = "examples/tutorial-1/config.json",
+      content = [Single """
+"""]
+    }
+  }
+
+theend = SinglePaneStep {
+      header = HeaderPane { content = [Single """## Final words
+  In this tutorial we have seens how to setup your work environment,
+  how to create a couple of FairRoot devices and run them both standalone
+  and (soon) using DDS. You are now encouraged to look at the other FairRoot
+  tutorials:
+
+  <https://github.com/FairRootGroup/FairRoot/tree/master/examples>
+
+"""]},
+      pane = ShellPane { 
+        content = [Single """
+  """],
     }
   }

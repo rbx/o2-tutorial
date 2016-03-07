@@ -108,7 +108,8 @@ model =
       sinkHeaderStep,
       applicationsStep,
       finalAppStep,
-      compiling
+      compiling,
+      theend
     ])
   }
 
