@@ -4,7 +4,7 @@ dist:
 	mkdir -p dist
 
 publish:
-	rm -fr dist/.git && cd dist && git init && git remote add origin https://github.com/ktf/o2-tutorial && git add . && git commit -a -m'Published' && git push origin HEAD:gh-pages
+	rm -fr dist/.git && cd dist && git init && git remote add origin https://github.com/ktf/o2-tutorial && git add . && git commit -a -m'Published' && git push -f origin HEAD:gh-pages
 
 dist/%.png: %.png
 	cp -f $< $@
