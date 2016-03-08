@@ -188,8 +188,8 @@ stepper model =
 
 title : Address Action -> Model -> Html
 title address model =
-  div [] [
-          span [onClick address (Arrows { x = -1, y = 0}), style [("margin-left", "10px"), ("cursor", "pointer")]] [ text (String.fromChar '\x25C0')],
+  div [style [("margin-top", "6px")]] [
+          span [onClick address (Arrows { x = -1, y = 0}), style [("margin-right", "10px"), ("cursor", "pointer")]] [ text (String.fromChar '\x25C0')],
           text ("Section: " ++ toString model.currentStep ++ " / Step: " ++ toString model.currentBuildUp),
           span [onClick address (Arrows { x = 1, y = 0}), style [("margin-left", "10px"), ("cursor", "pointer")]] [ text (String.fromChar '\x25B6')]
           ]

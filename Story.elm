@@ -792,46 +792,46 @@ $ runSampler --id sampler1 \\
       """,
       Reuse,
       Append """
-[09:12:08][STATE] Entering FairMQ state machine
-[09:12:08][INFO] *************************************************************************************
-[09:12:08][INFO] ***************************     Program options found     ***************************
-[09:12:08][INFO] *************************************************************************************
-[09:12:08][INFO] config-json-file = examples/tutorial-1/config.json  [Type=string]  [provided value] *
-[09:12:08][INFO] id               = sampler1                         [Type=string]  [provided value] *
-[09:12:08][INFO] io-threads       = 1                                [Type=int]     [default value]  *
-[09:12:08][INFO] log-color        = 1                                [Type=bool]    [default value]  *
-[09:12:08][INFO] transport        = zeromq                           [Type=string]  [default value]  *
-[09:12:08][INFO] verbose          = DEBUG                            [Type=string]  [default value]  *
-[09:12:08][INFO] *************************************************************************************
-[09:12:08][DEBUG] Found device id 'sampler1' in JSON input
-[09:12:08][DEBUG] Found device id 'sink1' in JSON input
-[09:12:08][DEBUG] [node = device]   id = sampler1
-[09:12:08][DEBUG]        [node = channel]   name = data-out
-[09:12:08][DEBUG]                [node = socket]   socket index = 1
-[09:12:08][DEBUG]                        type        = push
-[09:12:08][DEBUG]                        method      = bind
-[09:12:08][DEBUG]                        address     = tcp://*:5555
-[09:12:08][DEBUG]                        sndBufSize  = 1000
-[09:12:08][DEBUG]                        rcvBufSize  = 1000
-[09:12:08][DEBUG]                        rateLogging = 0
-[09:12:08][DEBUG] ---- Channel-keys found are :
-[09:12:08][DEBUG] data-out
-[09:12:08][INFO] PID: 41567
-[09:12:08][DEBUG] Using ZeroMQ library, version: 4.1.3
-[09:12:08][STATE] Entering INITIALIZING DEVICE state
-[09:12:08][DEBUG] Validating channel "data-out[0]"... VALID
-[09:12:08][DEBUG] Initializing channel data-out[0] (push)
-[09:12:08][DEBUG] Binding channel data-out[0] on tcp://*:5555
-[09:12:09][STATE] Entering DEVICE READY state
-[09:12:09][STATE] Entering INITIALIZING TASK state
-[09:12:09][STATE] Entering READY state
-[09:12:09][STATE] Entering RUNNING state
-[09:12:09][INFO] DEVICE: Running...
-[09:12:09][INFO] Use keys to control the state machine:
-[09:12:09][INFO] [h] help, [p] pause, [r] run, [s] stop, [t] reset task, [d] reset device, [q] end, [j] init task, [i] init device
+[STATE] Entering FairMQ state machine
+[INFO] *************************************************************************************
+[INFO] ***************************     Program options found     ***************************
+[INFO] *************************************************************************************
+[INFO] config-json-file = examples/tutorial-1/config.json  [Type=string]  [provided value] *
+[INFO] id               = sampler1                         [Type=string]  [provided value] *
+[INFO] io-threads       = 1                                [Type=int]     [default value]  *
+[INFO] log-color        = 1                                [Type=bool]    [default value]  *
+[INFO] transport        = zeromq                           [Type=string]  [default value]  *
+[INFO] verbose          = DEBUG                            [Type=string]  [default value]  *
+[INFO] *************************************************************************************
+[DEBUG] Found device id 'sampler1' in JSON input
+[DEBUG] Found device id 'sink1' in JSON input
+[DEBUG] [node = device]   id = sampler1
+[DEBUG]        [node = channel]   name = data-out
+[DEBUG]                [node = socket]   socket index = 1
+[DEBUG]                        type        = push
+[DEBUG]                        method      = bind
+[DEBUG]                        address     = tcp://*:5555
+[DEBUG]                        sndBufSize  = 1000
+[DEBUG]                        rcvBufSize  = 1000
+[DEBUG]                        rateLogging = 0
+[DEBUG] ---- Channel-keys found are :
+[DEBUG] data-out
+[INFO] PID: 41567
+[DEBUG] Using ZeroMQ library, version: 4.1.3
+[STATE] Entering INITIALIZING DEVICE state
+[DEBUG] Validating channel "data-out[0]"... VALID
+[DEBUG] Initializing channel data-out[0] (push)
+[DEBUG] Binding channel data-out[0] on tcp://*:5555
+[STATE] Entering DEVICE READY state
+[STATE] Entering INITIALIZING TASK state
+[STATE] Entering READY state
+[STATE] Entering RUNNING state
+[INFO] DEVICE: Running...
+[INFO] Use keys to control the state machine:
+[INFO] [h] help, [p] pause, [r] run, [s] stop, [t] reset task, [d] reset device, [q] end, [j] init task, [i] init device
 """, ReplaceLast """
 ...
-[09:12:10][INFO] Sending "Hello world"
+[INFO] Sending "Hello world"
 """]
     },
       rightPane = ShellPane {
@@ -841,46 +841,46 @@ $ runSink --id sink1 \\
 """,
     Reuse, 
     Append """
-[09:35:27][STATE] Entering FairMQ state machine                                                        [250/371]
-[09:35:27][INFO] *************************************************************************************
-[09:35:27][INFO] ***************************     Program options found     ***************************
-[09:35:27][INFO] *************************************************************************************
-[09:35:27][INFO] config-json-file = examples/tutorial-1/config.json  [Type=string]  [provided value] *
-[09:35:27][INFO] id               = sink1                            [Type=string]  [provided value] *
-[09:35:27][INFO] io-threads       = 1                                [Type=int]     [default value]  *
-[09:35:27][INFO] log-color        = 1                                [Type=bool]    [default value]  *
-[09:35:27][INFO] transport        = zeromq                           [Type=string]  [default value]  *
-[09:35:27][INFO] verbose          = DEBUG                            [Type=string]  [default value]  *
-[09:35:27][INFO] *************************************************************************************
-[09:35:27][DEBUG] Found device id 'sampler1' in JSON input
-[09:35:27][DEBUG] Found device id 'sink1' in JSON input
-[09:35:27][DEBUG] [node = device]   id = sink1
-[09:35:27][DEBUG]        [node = channel]   name = data-in
-[09:35:27][DEBUG]                [node = socket]   socket index = 1
-[09:35:27][DEBUG]                        type        = pull
-[09:35:27][DEBUG]                        method      = connect
-[09:35:27][DEBUG]                        address     = tcp://localhost:5555
-[09:35:27][DEBUG]                        sndBufSize  = 1000
-[09:35:27][DEBUG]                        rcvBufSize  = 1000
-[09:35:27][DEBUG]                        rateLogging = 0
-[09:35:27][DEBUG] ---- Channel-keys found are :
-[09:35:27][DEBUG] data-in
-[09:35:27][INFO] PID: 56198
-[09:35:27][DEBUG] Using ZeroMQ library, version: 4.1.3
-[09:35:27][STATE] Entering INITIALIZING DEVICE state
-[09:35:27][DEBUG] Validating channel "data-in[0]"... VALID
-[09:35:27][DEBUG] Initializing channel data-in[0] (pull)
-[09:35:27][DEBUG] Connecting channel data-in[0] to tcp://localhost:5555
-[09:35:28][STATE] Entering DEVICE READY state
-[09:35:28][STATE] Entering INITIALIZING TASK state
-[09:35:28][STATE] Entering READY state
-[09:35:28][STATE] Entering RUNNING state
-[09:35:28][INFO] DEVICE: Running...
-[09:35:28][INFO] Use keys to control the state machine:
-[09:12:09][INFO] [h] help, [p] pause, [r] run, [s] stop, [t] reset task, [d] reset device, [q] end, [j] init task, [i] init device
+[STATE] Entering FairMQ state machine                                                        [250/371]
+[INFO] *************************************************************************************
+[INFO] ***************************     Program options found     ***************************
+[INFO] *************************************************************************************
+[INFO] config-json-file = examples/tutorial-1/config.json  [Type=string]  [provided value] *
+[INFO] id               = sink1                            [Type=string]  [provided value] *
+[INFO] io-threads       = 1                                [Type=int]     [default value]  *
+[INFO] log-color        = 1                                [Type=bool]    [default value]  *
+[INFO] transport        = zeromq                           [Type=string]  [default value]  *
+[INFO] verbose          = DEBUG                            [Type=string]  [default value]  *
+[INFO] *************************************************************************************
+[DEBUG] Found device id 'sampler1' in JSON input
+[DEBUG] Found device id 'sink1' in JSON input
+[DEBUG] [node = device]   id = sink1
+[DEBUG]        [node = channel]   name = data-in
+[DEBUG]                [node = socket]   socket index = 1
+[DEBUG]                        type        = pull
+[DEBUG]                        method      = connect
+[DEBUG]                        address     = tcp://localhost:5555
+[DEBUG]                        sndBufSize  = 1000
+[DEBUG]                        rcvBufSize  = 1000
+[DEBUG]                        rateLogging = 0
+[DEBUG] ---- Channel-keys found are :
+[DEBUG] data-in
+[INFO] PID: 56198
+[DEBUG] Using ZeroMQ library, version: 4.1.3
+[STATE] Entering INITIALIZING DEVICE state
+[DEBUG] Validating channel "data-in[0]"... VALID
+[DEBUG] Initializing channel data-in[0] (pull)
+[DEBUG] Connecting channel data-in[0] to tcp://localhost:5555
+[STATE] Entering DEVICE READY state
+[STATE] Entering INITIALIZING TASK state
+[STATE] Entering READY state
+[STATE] Entering RUNNING state
+[INFO] DEVICE: Running...
+[INFO] Use keys to control the state machine:
+[INFO] [h] help, [p] pause, [r] run, [s] stop, [t] reset task, [d] reset device, [q] end, [j] init task, [i] init device
 """, ReplaceLast """
 ...
-[09:12:10][INFO] Received message "Hello world"
+[INFO] Received message "Hello world"
 """]
     }
   },
