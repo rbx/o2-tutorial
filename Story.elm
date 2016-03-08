@@ -146,6 +146,7 @@ $ which testFlp
 /Users/me/alice/sw/osx_x86-64/O2/master-1/bin/testFlp
 
 $ which dds-server
+/Users/me/alice/sw/osx_x86-64/DDS/master-1/bin/dds-server
 """ ] }
   },
 
@@ -369,7 +370,8 @@ unique_ptr<FairMQMessage> msg(fTransportFactory->CreateMessage());
 if (fChannels.at("data-in").at(0).Receive(msg) >= 0)
 {
     LOG(INFO) << "Received message: \\""
-              << string(static_cast<char*>(msg->GetData()), msg->GetSize())
+              << string(static_cast<char*>(msg->GetData()),
+                                           msg->GetSize())
               << "\\"";
 }
 ...
@@ -388,7 +390,8 @@ void AliceO2TutorialSink::Run()
         if (fChannels.at("data-in").at(0).Receive(msg) >= 0)
         {
             LOG(INFO) << "Received message: \\""
-                      << string(static_cast<char*>(msg->GetData()), msg->GetSize())
+                      << string(static_cast<char*>(msg->GetData()),
+                                                   msg->GetSize())
                       << "\\"";
         }
     }
@@ -878,15 +881,62 @@ $ runSink --id sink1 \\
 """]
     }
   },
+  SinglePaneStep {
+    header = HeaderPane { content = [ Single """ ## Using DDS
+Using the configuration file and mapping different ports and
+applications can become complex, especially if you plan to run your
+software in a distributed manner, on a cluster.
+    """, Replace """ ## Using DDS
+First of all make sure DDS is available in your installation
+""", 
+  Append """Then we can start the DDS commander via `dds-server` which will
+take care managing your topology.
+  """
+  ]},
+    pane = ShellPane { content = [
+             Single """
+""", 
+             Single """
+$ pushd $DDS_ROOT ; source DDS_env.sh ; popd
+$ which dds-server 
+
+/Users/me/alice/sw/osx_x86-64/DDS/master-1/bin/dds-server
+""", 
+              Append """
+$ dds-server start -s
+Checking availability of WN bin of the local system...
+found compatible WN bin: dds-wrk-bin-1.1.21.g93c122a-Darwin-universal.tar.gz
+Starting DDS commander...
+------------------------
+DDS commander server: 18733
+------------------------
+""",
+              Append """
+$ dds-submit --rms ssh
+""",
+              Append """
+$ dds-info -n
+""",
+              Append """
+$ dds-info -l
+""",
+              Append """
+$ dds-topology --set $DDS_ROOT/tutorials/tutorial1/tutorial1_topo.xml
+""",
+              Append """
+$ dds-topology --activate
+"""
+ ]}
+  },
 
   SinglePaneStep {
       header = HeaderPane { content = [Single """## Final words
-  In this tutorial we have seens how to setup your work environment,
-  how to create a couple of FairRoot devices and run them both standalone
-  and (soon) using DDS. You are now encouraged to look at the other FairRoot
-  tutorials:
+In this tutorial we have seens how to setup your work environment,
+how to create a couple of FairRoot devices and run them both standalone
+and (soon) using DDS. You are now encouraged to look at the other FairRoot
+tutorials:
 
-  <https://github.com/FairRootGroup/FairRoot/tree/master/examples>
+<https://github.com/FairRootGroup/FairRoot/tree/master/examples>
 
 """]},
       pane = ShellPane { 

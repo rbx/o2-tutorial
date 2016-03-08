@@ -73,9 +73,9 @@ applyLayout buildup layout =
         div [headerStyle] (render buildup step.header),
         div [bodyStyle] 
           [ 
-            div [class "pure-g"] [
-              div [innerStyle, class "pure-u-1"] [
-                img [src step.image, class "pure-img"] [text "A test image"]
+            div [class "pure-g", style [("text-align", "center")]] [
+              div [innerStyle, class "pure-u-1", style [("text-align", "center")]] [
+                img [src step.image] [text "A test image"]
               ]
             ]
           ],
