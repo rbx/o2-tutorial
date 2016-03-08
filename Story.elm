@@ -7,7 +7,10 @@ story = [
   SinglePaneStep
   {
     header = HeaderPane {content = [Single """
-## Welcome to the ALICE O2 Primer tutorial.""", Append """
+## Welcome to the ALICE O2 Primer tutorial.
+Use arrow keys to navigate.
+""", Replace """
+## Welcome to the ALICE O2 Primer tutorial.
 
 The purpose of this tutorial is to guide you step by step through the set up of
 your O2 working environment, the creation of your own FairRoot devices and

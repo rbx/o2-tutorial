@@ -186,15 +186,19 @@ stepper model =
   in
     ol [stepperStyle] (List.map navigationButton [0 .. numberOfSlides-1])
 
-title : Model -> Html
-title model =
-  div [] [text ("Section: " ++ toString model.currentStep ++ " / Step: " ++ toString model.currentBuildUp)]
+title : Address Action -> Model -> Html
+title address model =
+  div [] [
+          span [onClick address (Arrows { x = -1, y = 0}), style [("margin-left", "10px"), ("cursor", "pointer")]] [ text (String.fromChar '\x25C0')],
+          text ("Section: " ++ toString model.currentStep ++ " / Step: " ++ toString model.currentBuildUp),
+          span [onClick address (Arrows { x = 1, y = 0}), style [("margin-left", "10px"), ("cursor", "pointer")]] [ text (String.fromChar '\x25B6')]
+          ]
 
 view address model =
   div []
     [ 
       div [class "pure-g", topBarStyle] [
-        div [class "pure-u-1-2"] [title model],
+        div [class "pure-u-1-2"] [title address model],
         div [class "pure-u-1-2"] [stepper model]
       ],
       div [descriptionStyle] [currentBackground model]
