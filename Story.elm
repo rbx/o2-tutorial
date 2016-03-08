@@ -278,7 +278,9 @@ First the `Run()` method we will actually make sure you will keep iterating
 until the state machine does not exit from the `RUNNING` state.
 """, ReplaceLast """
 Inside this loop we construct a simple "Hello world" message which will
-then published for subscribers to receive.
+then published for subscribers to receive. Notice that by default the message will
+be deallocated with `free()`. If you need to provide an customized destructor, you will need
+to specify it as an argument of `CreateMessage()`.
 """, ReplaceLastN 3 """
 
 ## The Sampler
@@ -315,11 +317,10 @@ void AliceO2TutorialSampler::Run()
 """, Single """
 ...
 
-std::string text = "Hello world";
+char *text = strdup("Hello world");
 
 std::unique_ptr<FairMQMessage> msg(
-  fTransportFactory->CreateMessage(const_cast<char*>(text.c_str()),
-                                   text.length()));
+  fTransportFactory->CreateMessage(text, strlen(text)));
 
 fChannels.at("data-out").at(0).Send(msg);
 
@@ -338,11 +339,10 @@ void AliceO2TutorialSampler::Run()
   {
     boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 
-    std::string text = "Hello world";
+    char *text = strdup("Hello world");
 
     std::unique_ptr<FairMQMessage> msg(
-      fTransportFactory->CreateMessage(const_cast<char*>(text.c_str()),
-                                       text.length()));
+      fTransportFactory->CreateMessage(text, strlen(text)));
 
     LOG(INFO) << "Sending \\"" << text << "\\"";
 
@@ -700,7 +700,7 @@ install(TARGETS runSampler runSink
     }
   }
 
-running = TwoPanesStep {
+configuration = TwoPanesStep {
     header = HeaderPane { content = [Single """## Configuration 
 
 Now that we have two devices, we need run them and make sure they are   
@@ -792,6 +792,115 @@ $ vim examples/tutorial-1/config.json
         }
     }
 }
+"""]
+    }
+  }
+
+running = TwoPanesStep {
+      header = HeaderPane { content = [Single """
+## Running 
+
+We can finally run our applications. Simply pass the configuration when
+invoking them on the command line.
+""", Append """Notice how we also need to provide the id of the device on the command 
+line so that it's configuration can be picked up from file."""]},
+      leftPane = ShellPane { 
+        content = [
+      Single """
+$ runSampler --id sampler1 \
+             --config-json-file examples/tutorial-1/config.json
+      """,
+      Reuse,
+      Append """
+[09:12:08][STATE] Entering FairMQ state machine
+[09:12:08][INFO] *************************************************************************************
+[09:12:08][INFO] ***************************     Program options found     ***************************
+[09:12:08][INFO] *************************************************************************************
+[09:12:08][INFO] config-json-file = examples/tutorial-1/config.json  [Type=string]  [provided value] *
+[09:12:08][INFO] id               = sampler1                         [Type=string]  [provided value] *
+[09:12:08][INFO] io-threads       = 1                                [Type=int]     [default value]  *
+[09:12:08][INFO] log-color        = 1                                [Type=bool]    [default value]  *
+[09:12:08][INFO] transport        = zeromq                           [Type=string]  [default value]  *
+[09:12:08][INFO] verbose          = DEBUG                            [Type=string]  [default value]  *
+[09:12:08][INFO] *************************************************************************************
+[09:12:08][DEBUG] Found device id 'sampler1' in JSON input
+[09:12:08][DEBUG] Found device id 'sink1' in JSON input
+[09:12:08][DEBUG] [node = device]   id = sampler1
+[09:12:08][DEBUG]        [node = channel]   name = data-out
+[09:12:08][DEBUG]                [node = socket]   socket index = 1
+[09:12:08][DEBUG]                        type        = push
+[09:12:08][DEBUG]                        method      = bind
+[09:12:08][DEBUG]                        address     = tcp://*:5555
+[09:12:08][DEBUG]                        sndBufSize  = 1000
+[09:12:08][DEBUG]                        rcvBufSize  = 1000
+[09:12:08][DEBUG]                        rateLogging = 0
+[09:12:08][DEBUG] ---- Channel-keys found are :
+[09:12:08][DEBUG] data-out
+[09:12:08][INFO] PID: 41567
+[09:12:08][DEBUG] Using ZeroMQ library, version: 4.1.3
+[09:12:08][STATE] Entering INITIALIZING DEVICE state
+[09:12:08][DEBUG] Validating channel "data-out[0]"... VALID
+[09:12:08][DEBUG] Initializing channel data-out[0] (push)
+[09:12:08][DEBUG] Binding channel data-out[0] on tcp://*:5555
+[09:12:09][STATE] Entering DEVICE READY state
+[09:12:09][STATE] Entering INITIALIZING TASK state
+[09:12:09][STATE] Entering READY state
+[09:12:09][STATE] Entering RUNNING state
+[09:12:09][INFO] DEVICE: Running...
+[09:12:09][INFO] Use keys to control the state machine:
+[09:12:09][INFO] [h] help, [p] pause, [r] run, [s] stop, [t] reset task, [d] reset device, [q] end, [j] init task, [i] init device
+""", ReplaceLast """
+...
+[09:12:10][INFO] Sending "Hello world"
+"""]
+    },
+      rightPane = ShellPane {
+        content = [Single """
+$ runSink --id sink1 \
+          --config-json-file examples/tutorial-1/config.json
+""",
+    Reuse, 
+    Append """
+[09:35:27][STATE] Entering FairMQ state machine                                                        [250/371]
+[09:35:27][INFO] *************************************************************************************
+[09:35:27][INFO] ***************************     Program options found     ***************************
+[09:35:27][INFO] *************************************************************************************
+[09:35:27][INFO] config-json-file = examples/tutorial-1/config.json  [Type=string]  [provided value] *
+[09:35:27][INFO] id               = sink1                            [Type=string]  [provided value] *
+[09:35:27][INFO] io-threads       = 1                                [Type=int]     [default value]  *
+[09:35:27][INFO] log-color        = 1                                [Type=bool]    [default value]  *
+[09:35:27][INFO] transport        = zeromq                           [Type=string]  [default value]  *
+[09:35:27][INFO] verbose          = DEBUG                            [Type=string]  [default value]  *
+[09:35:27][INFO] *************************************************************************************
+[09:35:27][DEBUG] Found device id 'sampler1' in JSON input
+[09:35:27][DEBUG] Found device id 'sink1' in JSON input
+[09:35:27][DEBUG] [node = device]   id = sink1
+[09:35:27][DEBUG]        [node = channel]   name = data-in
+[09:35:27][DEBUG]                [node = socket]   socket index = 1
+[09:35:27][DEBUG]                        type        = pull
+[09:35:27][DEBUG]                        method      = connect
+[09:35:27][DEBUG]                        address     = tcp://localhost:5555
+[09:35:27][DEBUG]                        sndBufSize  = 1000
+[09:35:27][DEBUG]                        rcvBufSize  = 1000
+[09:35:27][DEBUG]                        rateLogging = 0
+[09:35:27][DEBUG] ---- Channel-keys found are :
+[09:35:27][DEBUG] data-in
+[09:35:27][INFO] PID: 56198
+[09:35:27][DEBUG] Using ZeroMQ library, version: 4.1.3
+[09:35:27][STATE] Entering INITIALIZING DEVICE state
+[09:35:27][DEBUG] Validating channel "data-in[0]"... VALID
+[09:35:27][DEBUG] Initializing channel data-in[0] (pull)
+[09:35:27][DEBUG] Connecting channel data-in[0] to tcp://localhost:5555
+[09:35:28][STATE] Entering DEVICE READY state
+[09:35:28][STATE] Entering INITIALIZING TASK state
+[09:35:28][STATE] Entering READY state
+[09:35:28][STATE] Entering RUNNING state
+[09:35:28][INFO] DEVICE: Running...
+[09:35:28][INFO] Use keys to control the state machine:
+[09:12:09][INFO] [h] help, [p] pause, [r] run, [s] stop, [t] reset task, [d] reset device, [q] end, [j] init task, [i] init device
+""", ReplaceLast """
+...
+[09:12:10][INFO] Received message "Hello world"
 """]
     }
   }

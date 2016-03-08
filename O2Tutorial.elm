@@ -109,6 +109,7 @@ model =
       applicationsStep,
       finalAppStep,
       compiling,
+      configuration,
       running,
       theend
     ])
