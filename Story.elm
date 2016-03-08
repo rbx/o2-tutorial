@@ -2,8 +2,9 @@ module Story where
 
 import DataModel exposing (..)
 
-welcomeStep : Layout
-welcomeStep = SinglePaneStep
+story : List Layout
+story = [
+  SinglePaneStep
   {
     header = HeaderPane {content = [Single """
 ## Welcome to the ALICE O2 Primer tutorial.""", Append """
@@ -28,10 +29,9 @@ $ pwd
 
 $ export WORK_DIR=$PWD
 """] }
-  }
+  },
 
-checkoutStep : Layout
-checkoutStep = SinglePaneStep
+  SinglePaneStep
   {
     header = HeaderPane {content = [Single """
 ## Setting up your environment
@@ -76,10 +76,9 @@ $ git clone -b dev https://github.com/AliceO2Group O2
 $ alibuild/aliBuild build O2
 """
   ]}
-  }
+  },
 
-directoryStep : Layout
-directoryStep = SinglePaneStep
+  SinglePaneStep
   {
     header = HeaderPane {content = [Single """
 ## Directory structure
@@ -120,29 +119,9 @@ $ ls sw/osx_x86-64/O2/latest
 bin            etc            include        lib            relocate-me.sh share
 """]
     }
-  }
+  },
 
-develStep: Layout
-develStep = SinglePaneStep
-  {
-    header = HeaderPane { content = [Single """
-## Developing O2
-
-What we have done so far is useful if you just plan to simply run
-executables provided by O2. In case you want to actually develop O2,
-or any of it's dependencies, you actually need to check it out at the same level as
-`alidist`.
-"""]},
-    pane = ShellPane { content = [ Single """
-$ git clone https://github.com/alisw/alibuild
-$ git clone https://github.com/alisw/alidist
-$ git clone https://github.com/AliceO2Group/AliceO2
-$ alibuild build O2
-"""] }
-  }
-
-environmentStep: Layout
-environmentStep = SinglePaneStep
+  SinglePaneStep
   {
     header = HeaderPane { content = [Single """
 ## Setting up the environment
@@ -168,10 +147,9 @@ $ which testFlp
 
 $ which dds-server
 """ ] }
-  }
+  },
 
-deviceStep : Layout
-deviceStep = ImageStep
+  ImageStep
   {
     header = HeaderPane { content = [Single """
 ## O2 / FairRoot architecture : Devices
@@ -182,10 +160,9 @@ devices. Devices are instances of the `FairMQDevice` class and they
 provide implement computation and communication with other devices.
 """]},
     image = "device.png"
-  }
+  },
 
-topologyStep : Layout
-topologyStep = ImageStep
+  ImageStep
   {
     header = HeaderPane { content = [Single """
 
@@ -194,10 +171,9 @@ topologyStep = ImageStep
 A group of devices can be linked together in what is called a ``topology''.
 """]},
     image = "topology.png"
-  }
+  },
 
-samplerSinkStep : Layout
-samplerSinkStep = ImageStep
+  ImageStep
   {
     header = HeaderPane {content = [Single """
 
@@ -211,10 +187,9 @@ The source code for this example is at <https://github.com/FairRootGroup/FairRoo
 
 """]},
     image = "sampler-sink.png"
-  }
+  },
 
-samplerEnvStep : Layout
-samplerEnvStep = SinglePaneStep
+  SinglePaneStep
   {
     header = HeaderPane { content = [Single """
 
@@ -228,10 +203,9 @@ all the required sources.
 $ cd O2
 $ mkdir -p examples/tutorial-1
 """] }
-  }
+  },
 
-samplerHeaderStep : Layout
-samplerHeaderStep = TwoPanesStep
+  TwoPanesStep
   {
     header = HeaderPane {content = [Single """
 
@@ -263,10 +237,9 @@ class AliceO2TutorialSampler : public FairMQDevice
 """],
     filename = "examples/tutorial-1/AliceO2TutorialSampler.h"
     }
-  }
+  },
 
-samplerImplStep : Layout
-samplerImplStep = TwoPanesStep
+  TwoPanesStep
   {
     header = HeaderPane {content = [Single """
 
@@ -351,10 +324,9 @@ void AliceO2TutorialSampler::Run()
 }
 """]
     }
-  }
+  },
 
-sinkHeaderStep : Layout
-sinkHeaderStep = TwoPanesStep
+  TwoPanesStep
   {
     header = HeaderPane { content = [Single """
 
@@ -423,10 +395,9 @@ void AliceO2TutorialSink::Run()
 }
 """]
     }
-  }
+  },
 
-applicationsStep: Layout
-applicationsStep = SinglePaneStep
+  SinglePaneStep
   {
     header = HeaderPane { content = [Single """
 
@@ -504,10 +475,9 @@ sampler.WaitForEndOfState("INIT_TASK");
 sampler.ChangeState("RUN");
 sampler.InteractiveStateLoop();
 """]}
-  }
+  },
 
-
-finalAppStep = TwoPanesStep {
+  TwoPanesStep {
   header = HeaderPane {content = [Single """
   ## Creating the driver processes
 
@@ -632,9 +602,9 @@ int main(int argc, char** argv)
 }
 """]
     }
-  }
+  },
 
-compiling = TwoPanesStep {
+  TwoPanesStep {
     header = HeaderPane { content = [Single """## Compiling
 
 In order to compile in Alice O2 we rely on [CMake](https://cmake.org). You will need
@@ -663,7 +633,11 @@ $ make -j 10 install
 [100%] Built target testits
 $ 
 """, Replace """
-$ which runSampler && which runSink"""],
+$ which runSampler 
+/Users/me/alice/sw/osx_x86-64/O2/master-1/bin/runSampler
+$ which runSink
+/Users/me/alice/sw/osx_x86-64/O2/master-1/bin/runSink
+"""],
     },
     rightPane = EditorPane { 
       filename = "examples/tutorial-1/CMakeLists.txt",
@@ -698,9 +672,9 @@ install(TARGETS runSampler runSink
         RUNTIME DESTINATION bin)
 """]
     }
-  }
+  },
 
-configuration = TwoPanesStep {
+  TwoPanesStep {
     header = HeaderPane { content = [Single """## Configuration 
 
 Now that we have two devices, we need run them and make sure they are   
@@ -794,9 +768,9 @@ $ vim examples/tutorial-1/config.json
 }
 """]
     }
-  }
+  },
 
-running = TwoPanesStep {
+  TwoPanesStep {
       header = HeaderPane { content = [Single """
 ## Running 
 
@@ -807,7 +781,7 @@ line so that it's configuration can be picked up from file."""]},
       leftPane = ShellPane { 
         content = [
       Single """
-$ runSampler --id sampler1 \
+$ runSampler --id sampler1 \\
              --config-json-file examples/tutorial-1/config.json
       """,
       Reuse,
@@ -856,7 +830,7 @@ $ runSampler --id sampler1 \
     },
       rightPane = ShellPane {
         content = [Single """
-$ runSink --id sink1 \
+$ runSink --id sink1 \\
           --config-json-file examples/tutorial-1/config.json
 """,
     Reuse, 
@@ -903,9 +877,9 @@ $ runSink --id sink1 \
 [09:12:10][INFO] Received message "Hello world"
 """]
     }
-  }
+  },
 
-theend = SinglePaneStep {
+  SinglePaneStep {
       header = HeaderPane { content = [Single """## Final words
   In this tutorial we have seens how to setup your work environment,
   how to create a couple of FairRoot devices and run them both standalone
@@ -920,3 +894,4 @@ theend = SinglePaneStep {
   """],
     }
   }
+  ]

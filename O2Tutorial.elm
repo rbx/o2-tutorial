@@ -94,25 +94,7 @@ model =
   {
     currentStep = 0,
     currentBuildUp = 0,
-    slides = Array.fromList ([
-      welcomeStep,
-      checkoutStep,
-      directoryStep, 
-      environmentStep,
-      deviceStep,
-      topologyStep,
-      samplerSinkStep,
-      samplerEnvStep,
-      samplerHeaderStep,
-      samplerImplStep,
-      sinkHeaderStep,
-      applicationsStep,
-      finalAppStep,
-      compiling,
-      configuration,
-      running,
-      theend
-    ])
+    slides = Array.fromList story
   }
 
 messages : Signal.Mailbox Action

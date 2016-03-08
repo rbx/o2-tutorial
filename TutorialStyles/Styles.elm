@@ -85,7 +85,8 @@ shellTabStyle =
   ("padding-right", "0px"),
   ("padding-top", "0px"),
   ("position", "relative"),
-  ("zoom", "1")
+  ("zoom", "1"),
+  ("text-align", "center")
   ]
 
 shellStyle : Attribute
@@ -174,7 +175,6 @@ stepperStyle =
   style [
     ("color", "rgb(67, 67, 67)"),
     ("display", "block"),
-    ("float", "right"),
     ("font-family", "OpenSansRegular, 'Helvetica Neue', Helvetica, Arial, sans-serif"),
     ("font-size", "10px"),
     ("height", "24px"),
