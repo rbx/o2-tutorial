@@ -882,16 +882,28 @@ $ runSink --id sink1 \\
     }
   },
   SinglePaneStep {
-    header = HeaderPane { content = [ Single """ ## Using DDS
-Using the configuration file and mapping different ports and
-applications can become complex, especially if you plan to run your
-software in a distributed manner, on a cluster.
-    """, Replace """ ## Using DDS
-First of all make sure DDS is available in your installation
+    header = HeaderPane { content = [ Single """ ## Using DDS (Incomplete)
+Using the configuration file and mapping different ports
+and applications can become complex, especially if you
+plan to run your software in a distributed manner, on a
+cluster. In order to help to these kind of issues the [DDS
+project](http://dds.gsi.de/doc/nightly/quick-start.html) provides an
+easy way to do deployments which range from a single host to a whole
+cluster.
+    """, Replace """ ## Using DDS (Incomplete)
+First of all make sure DDS is available in your installation.
 """, 
-  Append """Then we can start the DDS commander via `dds-server` which will
+  Append """
+Then we can start the DDS commander via `dds-server` which will
 take care managing your topology.
-  """
+  """,
+  Append """
+You can then start the agent using `dds-submit`.
+""",
+  Append """
+You can check how many agents you have available by running `dds-info -n` and 
+`dds-info -l`.
+"""
   ]},
     pane = ShellPane { content = [
              Single """
@@ -912,12 +924,10 @@ DDS commander server: 18733
 ------------------------
 """,
               Append """
-$ dds-submit --rms ssh
+$ dds-submit --rms ssh -n 1
 """,
               Append """
 $ dds-info -n
-""",
-              Append """
 $ dds-info -l
 """,
               Append """

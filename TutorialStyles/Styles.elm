@@ -42,8 +42,7 @@ innerStyle =
     ("padding-bottom", "0px"),
     ("padding-left", "60px"),
     ("padding-right", "60px"),
-    ("padding-top", "0px"),
-    ("text-align", "center")
+    ("padding-top", "0px")
   ]
 
 shellTabStyle : Attribute
