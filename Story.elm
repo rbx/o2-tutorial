@@ -701,18 +701,97 @@ install(TARGETS runSampler runSink
   }
 
 running = TwoPanesStep {
-    header = HeaderPane { content = [Single """## Running
+    header = HeaderPane { content = [Single """## Configuration 
 
-Now that we have two devices, we need run them and make sure they are configured correctly so that they can 
-talk to each other. 
+Now that we have two devices, we need run them and make sure they are   
+configured correctly so that they can talk to each other. This is done via a
+JSON based configuration.
+""", Replace """## Configuration
+At the toplevel the configuration has the following structure, 
+where there is one `device` stanza for each device we want to run (two
+in our case, one for the sampler and one for the sink).
+""", Replace """## Configuration
+At minimum, each of the stanzas will have to specify a unique id for the
+device and the details about its channels, making sure they correspond
+to what is being specified in the C++ code.
 """]},
     leftPane = ShellPane { 
       content = [Single """
+$ vim examples/tutorial-1/config.json
 """],
     },
-    rightPane = EditorPane { 
+    rightPane = EditorPane {
       filename = "examples/tutorial-1/config.json",
-      content = [Single """
+      content = [Single "", Single """
+{
+  "fairMQOptions":
+  {
+    "device":
+    {
+      ...
+    },
+    "device":
+    {
+      ...
+    }
+  }
+}
+""", Replace """
+"id": "sampler1",
+"channel":
+{
+    "name": "data-out",
+    "socket":
+    {
+        "type": "push",
+        "method": "bind",
+        "address": "tcp://*:5555",
+        "sndBufSize": "1000",
+        "rcvBufSize": "1000",
+        "rateLogging": "0"
+    }
+}
+""", Single """
+{
+    "fairMQOptions":
+    {
+        "device":
+        {
+            "id": "sampler1",
+            "channel":
+            {
+                "name": "data-out",
+                "socket":
+                {
+                    "type": "push",
+                    "method": "bind",
+                    "address": "tcp://*:5555",
+                    "sndBufSize": "1000",
+                    "rcvBufSize": "1000",
+                    "rateLogging": "0"
+                }
+            }
+        },
+
+        "device":
+        {
+            "id": "sink1",
+            "channel":
+            {
+                "name": "data-in",
+                "socket":
+                {
+                    "type": "pull",
+                    "method": "connect",
+                    "address": "tcp://localhost:5555",
+                    "sndBufSize": "1000",
+                    "rcvBufSize": "1000",
+                    "rateLogging": "0"
+                }
+            }
+        }
+    }
+}
 """]
     }
   }
