@@ -318,5 +318,5 @@ topBarStyle =
 
 descriptionStyle =
   style [
-  ("padding-top", "60px")
+  ("padding-top", "20px")
   ]
