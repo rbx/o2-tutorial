@@ -112,7 +112,8 @@ app =
       , update = update
       , view = view
       , inputs = [ messages.signal,
-                   Signal.map Arrows Keyboard.arrows
+                   Signal.map Arrows Keyboard.arrows,
+                   Signal.map Enter Keyboard.enter
                  ]
       }
 
@@ -207,6 +208,7 @@ view address model =
 type Action = NoOp 
             | MoveToPage Int Int
             | Arrows { x : Int, y : Int }
+            | Enter Bool
 
 handleArrows : Model -> { x : Int, y : Int } -> Model
 handleArrows model a =
@@ -244,6 +246,8 @@ update action model =
     NoOp -> (model, Effects.none)
     MoveToPage page buildup -> (moveToPage page buildup model, Effects.none)
     Arrows a -> (handleArrows model a, Effects.none)
+    Enter True -> (handleArrows model {x=1, y=0}, Effects.none)
+    Enter False -> (handleArrows model {x=1, y=0}, Effects.none)
 
 port currentPage : Signal Int
 port currentPage = Signal.map (\n -> 1) messages.signal

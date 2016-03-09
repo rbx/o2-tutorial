@@ -25,7 +25,7 @@ environment variable to it.
     pane = ShellPane { content = [Single "\n$\n", Reuse, Replace """
 $ mkdir -p ~/alice 
 
-$ cd ~ ~/alice
+$ cd ~/alice
 
 $ pwd
 /Users/me/alice
